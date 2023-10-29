@@ -176,13 +176,29 @@
 </template>
 
 <script>
+const {
+  remoteConfigSample: userRemoteConfigSample,
+  defaultBackend: userDefaultBackend,
+  shortUrlBackend: userShortUrlBackend,
+  configUploadBackend: userConfigUploadBackend,
+  backendOptions: userBackendOptions,
+  remoteConfigList: userRemoteConfigList
+} = document.querySelector('html').dataset
 const project = process.env.VUE_APP_PROJECT
-const remoteConfigSample = process.env.VUE_APP_SUBCONVERTER_REMOTE_CONFIG
+const remoteConfigSample = (userRemoteConfigSample && userRemoteConfigSample.length) ? userRemoteConfigSample: process.env.VUE_APP_SUBCONVERTER_REMOTE_CONFIG
 const gayhubRelease = process.env.VUE_APP_BACKEND_RELEASE
-const defaultBackend = process.env.VUE_APP_SUBCONVERTER_DEFAULT_BACKEND + '/sub?'
-const shortUrlBackend = process.env.VUE_APP_MYURLS_API
-const configUploadBackend = process.env.VUE_APP_CONFIG_UPLOAD_API
+const defaultBackend = ( (userDefaultBackend && userDefaultBackend.length) ? userDefaultBackend: process.env.VUE_APP_SUBCONVERTER_DEFAULT_BACKEND) + '/sub?'
+const shortUrlBackend =  (userShortUrlBackend && userShortUrlBackend.length) ? userShortUrlBackend: process.env.VUE_APP_MYURLS_API
+const configUploadBackend =  (userConfigUploadBackend && userConfigUploadBackend.length) ? userConfigUploadBackend: process.env.VUE_APP_CONFIG_UPLOAD_API
 const tgBotLink = process.env.VUE_APP_BOT_LINK
+let customBackendOptions = []
+let customRemoteConfigList = []
+try {
+  customBackendOptions = (userBackendOptions && userBackendOptions.length) ? JSON.parse(decodeURIComponent(userBackendOptions)) : []
+  customRemoteConfigList = (userRemoteConfigList && userRemoteConfigList.length) ? JSON.parse(decodeURIComponent(userRemoteConfigList)) : []
+} catch (error) {
+  // console.error(`json parse error: `, error.message)
+}
 
 export default {
   data() {
@@ -210,8 +226,20 @@ export default {
           ClashR: "clashr",
           Surge2: "surge&ver=2",
         },
-        backendOptions: [{ value: "http://127.0.0.1:25500/sub?" }],
+        backendOptions: [
+          ...customBackendOptions,
+          { value: "http://127.0.0.1:25500/sub?" },
+          { value: "https://api.v1.mk/sub?" },
+          { value: "https://sub.d1.mk/sub?" },
+          { value: "https://api.tsutsu.one/sub?" },
+          { value: "https://v.id9.cc/sub?" },
+          { value: "https://www.nameless13.com/sub?" },
+          { value: "https://sub.xeton.dev/sub?" },
+          { value: "https://api.wcc.best/sub?" },
+          { value: "https://api.dler.io/sub?" },
+        ],
         remoteConfig: [
+          ...customRemoteConfigList,
           {
             label: "universal",
             options: [
@@ -295,7 +323,7 @@ export default {
         emoji: true,
         nodeList: false,
         extraset: false,
-        sort: false,
+        sort: true,
         udp: false,
         tfo: false,
         scv: true,
@@ -341,7 +369,6 @@ export default {
   },
   mounted() {
     this.form.clientType = "clash";
-    this.notify();
     this.getBackendVersion();
   },
   methods: {
@@ -406,19 +433,19 @@ export default {
         this.form.insert;
 
       if (this.advanced === "2") {
-        if (this.form.remoteConfig !== "") {
+        if (this.form.remoteConfig && this.form.remoteConfig !== "") {
           this.customSubUrl +=
             "&config=" + encodeURIComponent(this.form.remoteConfig);
         }
-        if (this.form.excludeRemarks !== "") {
+        if (this.form.excludeRemarks && this.form.excludeRemarks !== "") {
           this.customSubUrl +=
             "&exclude=" + encodeURIComponent(this.form.excludeRemarks);
         }
-        if (this.form.includeRemarks !== "") {
+        if (this.form.includeRemarks && this.form.includeRemarks !== "") {
           this.customSubUrl +=
             "&include=" + encodeURIComponent(this.form.includeRemarks);
         }
-        if (this.form.filename !== "") {
+        if (this.form.filename && this.form.filename !== "") {
           this.customSubUrl +=
             "&filename=" + encodeURIComponent(this.form.filename);
         }
@@ -427,17 +454,37 @@ export default {
             "&append_type=" + this.form.appendType.toString();
         }
 
+        if (this.form.nodeList) {
+          this.customSubUrl +=
+            "&list=" + this.form.nodeList.toString();
+        }
+
+        if (this.form.tfo) {
+          this.customSubUrl +=
+            "&tfo=" + this.form.tfo.toString();
+        }
+
+        if (this.form.scv) {
+          this.customSubUrl +=
+            "&scv=" + this.form.scv.toString();
+        }
+
+        if (this.form.fdn) {
+          this.customSubUrl +=
+            "&fdn=" + this.form.fdn.toString();
+        }
+
         this.customSubUrl +=
           "&emoji=" +
           this.form.emoji.toString() +
-          "&list=" +
-          this.form.nodeList.toString() +
-          "&tfo=" +
-          this.form.tfo.toString() +
-          "&scv=" +
-          this.form.scv.toString() +
-          "&fdn=" +
-          this.form.fdn.toString() +
+          // "&list=" +
+          // this.form.nodeList.toString() +
+          // "&tfo=" +
+          // this.form.tfo.toString() +
+          // "&scv=" +
+          // this.form.scv.toString() +
+          // "&fdn=" +
+          // this.form.fdn.toString() +
           "&sort=" +
           this.form.sort.toString();
 
@@ -493,19 +540,6 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-    },
-    notify() {
-      const h = this.$createElement;
-
-      this.$notify({
-        title: "隐私提示",
-        type: "warning",
-        message: h(
-          "i",
-          { style: "color: teal" },
-          "各种订阅链接（短链接服务除外）生成纯前端实现，无隐私问题。默认提供后端转换服务，隐私担忧者请自行搭建后端服务。"
-        )
-      });
     },
     confirmUploadConfig() {
       if (this.uploadConfig === "") {
