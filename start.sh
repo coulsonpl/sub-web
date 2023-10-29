@@ -36,7 +36,7 @@ if [ -n "$VUE_APP_BACKEND_OPTIONS" ]; then
   backendOptions=$(urlencode "$VUE_APP_BACKEND_OPTIONS")
 fi
 
-# 检查 VUE_APP_REMOTE_CONFIG 是否非空
+# 检查 VUE_APP_REMOTE_CONFIG_LIST 是否非空
 if [ -n "$VUE_APP_REMOTE_CONFIG_LIST" ]; then
   echo "VUE_APP_REMOTE_CONFIG: $VUE_APP_REMOTE_CONFIG_LIST"
   remoteConfigList=$(urlencode "$VUE_APP_REMOTE_CONFIG_LIST")
