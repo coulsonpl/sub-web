@@ -66,6 +66,9 @@
                         <el-checkbox v-model="form.udp" @change="needUdp = true" label="启用 UDP"></el-checkbox>
                       </el-row>
                       <el-row>
+                        <el-checkbox v-model="form.tfo" label="启用 TFO"></el-checkbox>
+                      </el-row>
+                      <el-row>
                         <el-checkbox v-model="form.appendType" label="节点类型"></el-checkbox>
                       </el-row>
                       <el-row>
@@ -73,6 +76,9 @@
                       </el-row>
                       <el-row>
                         <el-checkbox v-model="form.fdn" label="过滤非法节点"></el-checkbox>
+                      </el-row>
+                      <el-row v-if="form.clientType === 'clash'">
+                        <el-checkbox v-model="form.new_name" label="Clash新字段名"></el-checkbox>
                       </el-row>
                       <el-button slot="reference">更多选项</el-button>
                     </el-popover>
@@ -459,6 +465,17 @@ export default {
             "&list=" + this.form.nodeList.toString();
         }
 
+        if (this.form.tpl.surge.doh === true) {
+          this.customSubUrl += "&surge.doh=true";
+        }
+
+        if (this.form.clientType === "clash") {
+          if (this.form.tpl.clash.doh === true) {
+            this.customSubUrl += "&clash.doh=true";
+          }
+          this.customSubUrl += "&new_name=" + this.form.new_name.toString();
+        }
+
         if (this.form.tfo) {
           this.customSubUrl +=
             "&tfo=" + this.form.tfo.toString();
@@ -500,20 +517,6 @@ export default {
 
         if (this.needUdp) {
           this.customSubUrl += "&udp=" + this.form.udp.toString()
-        }
-
-        if (this.form.tpl.surge.doh === true) {
-          this.customSubUrl += "&surge.doh=true";
-        }
-
-        if (this.form.clientType === "clash") {
-          if (this.form.tpl.clash.doh === true) {
-            this.customSubUrl += "&clash.doh=true";
-          }
-
-          if (this.form.new_name) {
-            this.customSubUrl += "&new_name=" + this.form.new_name.toString();
-          }
         }
       }
 
