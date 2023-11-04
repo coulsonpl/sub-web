@@ -161,7 +161,7 @@
       <div slot="title">
         解析 Subconverter 链接
       </div>
-      <el-form label-position="left" :inline="true" >
+      <el-form label-position="left" :inline="true">
         <el-form-item prop="uploadConfig" label="订阅链接：" label-width="85px">
           <el-input v-model="loadConfig" style="width: 565px"></el-input>
         </el-form-item>
@@ -185,11 +185,11 @@ const {
   remoteConfigList: userRemoteConfigList
 } = document.querySelector('html').dataset
 const project = process.env.VUE_APP_PROJECT
-const remoteConfigSample = (userRemoteConfigSample && userRemoteConfigSample.length) ? userRemoteConfigSample: process.env.VUE_APP_SUBCONVERTER_REMOTE_CONFIG
+const remoteConfigSample = (userRemoteConfigSample && userRemoteConfigSample.length) ? userRemoteConfigSample : process.env.VUE_APP_SUBCONVERTER_REMOTE_CONFIG
 const gayhubRelease = process.env.VUE_APP_BACKEND_RELEASE
-const defaultBackend = ( (userDefaultBackend && userDefaultBackend.length) ? userDefaultBackend: process.env.VUE_APP_SUBCONVERTER_DEFAULT_BACKEND) + '/sub?'
-const shortUrlBackend =  (userShortUrlBackend && userShortUrlBackend.length) ? userShortUrlBackend: process.env.VUE_APP_MYURLS_API
-const configUploadBackend =  (userConfigUploadBackend && userConfigUploadBackend.length) ? userConfigUploadBackend: process.env.VUE_APP_CONFIG_UPLOAD_API
+const defaultBackend = ((userDefaultBackend && userDefaultBackend.length) ? userDefaultBackend : process.env.VUE_APP_SUBCONVERTER_DEFAULT_BACKEND) + '/sub?'
+const shortUrlBackend = (userShortUrlBackend && userShortUrlBackend.length) ? userShortUrlBackend : process.env.VUE_APP_MYURLS_API
+const configUploadBackend = (userConfigUploadBackend && userConfigUploadBackend.length) ? userConfigUploadBackend : process.env.VUE_APP_CONFIG_UPLOAD_API
 const tgBotLink = process.env.VUE_APP_BOT_LINK
 let customBackendOptions = []
 let customRemoteConfigList = []
@@ -474,19 +474,29 @@ export default {
             "&fdn=" + this.form.fdn.toString();
         }
 
-        this.customSubUrl +=
-          "&emoji=" +
-          this.form.emoji.toString() +
-          // "&list=" +
-          // this.form.nodeList.toString() +
-          // "&tfo=" +
-          // this.form.tfo.toString() +
-          // "&scv=" +
-          // this.form.scv.toString() +
-          // "&fdn=" +
-          // this.form.fdn.toString() +
-          "&sort=" +
-          this.form.sort.toString();
+        if (this.form.sort) {
+          this.customSubUrl +=
+            "&sort=" + this.form.sort.toString();
+        }
+
+        if (this.form.emoji) {
+          this.customSubUrl +=
+            "&emoji=" + this.form.emoji.toString();
+        }
+
+        // this.customSubUrl +=
+        //   "&emoji=" +
+        //   this.form.emoji.toString() +
+        //   "&list=" +
+        //   this.form.nodeList.toString() +
+        //   "&tfo=" +
+        //   this.form.tfo.toString() +
+        //   "&scv=" +
+        //   this.form.scv.toString() +
+        //   "&fdn=" +
+        //   this.form.fdn.toString() +
+        //   "&sort=" +
+        //   this.form.sort.toString();
 
         if (this.needUdp) {
           this.customSubUrl += "&udp=" + this.form.udp.toString()
@@ -501,7 +511,9 @@ export default {
             this.customSubUrl += "&clash.doh=true";
           }
 
-          this.customSubUrl += "&new_name=" + this.form.new_name.toString();
+          if (this.form.new_name) {
+            this.customSubUrl += "&new_name=" + this.form.new_name.toString();
+          }
         }
       }
 
